@@ -75,6 +75,58 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"checkup_completions": {
+                  Row: {
+                    "checkup_id": string,"clinical_notes": string | null,"completed_at": string,"completed_by": string,"id": string,"patient_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checkup_id": string,"clinical_notes"?: string | null,"completed_at"?: string,"completed_by": string,"id"?: string,"patient_id": string
+                  }
+                  Update: {
+                    "checkup_id"?: string,"clinical_notes"?: string | null,"completed_at"?: string,"completed_by"?: string,"id"?: string,"patient_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "checkup_completions_checkup_id_patient_id_fkey"
+      columns: ["checkup_id","patient_id"]
+isOneToOne: false
+      referencedRelation: "checkup_schedules"
+      referencedColumns: ["id","patient_id"]
+    },{
+      foreignKeyName: "checkup_completions_completed_by_fkey"
+      columns: ["completed_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"checkup_schedules": {
+                  Row: {
+                    "appointment_time": string,"checkup_type": string,"clinic_location": string | null,"created_at": string,"created_by": string,"doctor_name": string,"id": string,"notes": string | null,"patient_id": string,"reminded_at": string | null,"reminder_hours_before": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "appointment_time": string,"checkup_type"?: string,"clinic_location"?: string | null,"created_at"?: string,"created_by": string,"doctor_name": string,"id"?: string,"notes"?: string | null,"patient_id": string,"reminded_at"?: string | null,"reminder_hours_before"?: number
+                  }
+                  Update: {
+                    "appointment_time"?: string,"checkup_type"?: string,"clinic_location"?: string | null,"created_at"?: string,"created_by"?: string,"doctor_name"?: string,"id"?: string,"notes"?: string | null,"patient_id"?: string,"reminded_at"?: string | null,"reminder_hours_before"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "checkup_schedules_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "checkup_schedules_patient_id_fkey"
+      columns: ["patient_id"]
+isOneToOne: false
+      referencedRelation: "patients"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"consents": {
                   Row: {
                     "given_at": string,"given_by": string,"id": string,"notice_version": string,"patient_id": string,"purpose": string,"withdrawn_at": string | null,"withdrawn_by": string | null
@@ -373,11 +425,20 @@ isOneToOne: false
 "claim_document_for_parse":
 { Args: { "p_document": string }; Returns: Json
                            },
+"complete_checkup":
+{ Args: { "p_checkup": string,"p_notes": string }; Returns: string
+                           },
+"compliance":
+{ Args: { "p_days"?: number,"p_now"?: string,"p_patient": string }; Returns: Json
+                           },
 "create_invite":
 { Args: { "p_email": string,"p_patient": string,"p_role": string,"p_token_hash": string }; Returns: string
                            },
 "create_patient":
 { Args: { "p_blood_group"?: string,"p_date_of_birth": string,"p_emergency_contact_name"?: string,"p_emergency_contact_phone"?: string,"p_full_name": string,"p_missed_after_minutes": number,"p_notes"?: string,"p_physician_name"?: string,"p_physician_phone"?: string,"p_primary_condition"?: string,"p_timezone": string }; Returns: string
+                           },
+"delete_checkup":
+{ Args: { "p_checkup": string }; Returns: undefined
                            },
 "document_file_readable":
 { Args: { "p_name": string }; Returns: boolean
@@ -428,6 +489,12 @@ isOneToOne: false
                            },
 "revoke_invite":
 { Args: { "p_invite": string }; Returns: undefined
+                           },
+"save_checkup":
+{ Args: { "p_checkup": string,"p_checkup_type": string,"p_clinic_location": string,"p_doctor_name": string,"p_local_time": string,"p_notes": string,"p_patient": string,"p_reminder_hours_before": number }; Returns: string
+                           },
+"send_checkup_reminders":
+{ Args: { "p_now"?: string }; Returns: number
                            },
 "shares_patient":
 { Args: { "p_user": string }; Returns: boolean

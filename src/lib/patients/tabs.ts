@@ -7,6 +7,8 @@ export const PATIENT_TABS: Tab[] = [
   { href: (id) => `/patients/${id}`, label: strings.tabs.overview, roles: ["OWNER", "CAREGIVER", "VIEWER"] },
   { href: (id) => `/patients/${id}/documents`, label: strings.tabs.documents, roles: ["OWNER", "CAREGIVER", "VIEWER"] },
   { href: (id) => `/patients/${id}/medicines`, label: strings.tabs.medicines, roles: ["OWNER", "CAREGIVER", "VIEWER"] },
+  { href: (id) => `/patients/${id}/checkups`, label: strings.tabs.checkups, roles: ["OWNER", "CAREGIVER", "VIEWER"] },
+  { href: (id) => `/patients/${id}/activity`, label: strings.tabs.activity, roles: ["OWNER", "CAREGIVER"] },
   { href: (id) => `/patients/${id}/people`, label: strings.tabs.people, roles: ["OWNER", "CAREGIVER", "VIEWER"] },
 ];
 

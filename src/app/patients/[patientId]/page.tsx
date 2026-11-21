@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { AttentionCard } from "@/components/dashboard/attention-card";
+import { ComplianceCard } from "@/components/dashboard/compliance-card";
+import { LiveRefresh } from "@/components/dashboard/live-refresh";
+import { TodayDosesCard } from "@/components/dashboard/today-doses-card";
 import { Card } from "@/components/ui/card";
+import type { Compliance } from "@/lib/dashboard/compliance";
+import type { Dose } from "@/lib/doses/view";
 import { loadPatientContext } from "@/lib/patients/context";
+import { dateInZone, timeInZone } from "@/lib/time/local-date";
 import { strings } from "@/strings/en";
 
 function calculateAge(dateOfBirth: string): number {
@@ -20,7 +27,41 @@ export default async function PatientOverviewPage({
   params: Promise<{ patientId: string }>;
 }) {
   const { patientId } = await params;
-  const { patient, role } = await loadPatientContext(patientId, `/patients/${patientId}`);
+  const { supabase, patient, role } = await loadPatientContext(patientId, `/patients/${patientId}`);
+
+  const [complianceRes, dosesRes, docsRes, checkupsRes] = await Promise.all([
+    supabase.rpc("compliance", { p_patient: patientId, p_days: 7 }),
+    supabase.rpc("doses_for_day", { p_patient: patientId }),
+    supabase
+      .from("medical_documents")
+      .select("id, document_type, created_at, extraction_status")
+      .eq("patient_id", patientId)
+      .in("extraction_status", ["PARSED", "FAILED"]),
+    supabase
+      .from("checkup_schedules")
+      .select("id, doctor_name, appointment_time, checkup_type, checkup_completions(id)")
+      .eq("patient_id", patientId)
+      .gt("appointment_time", new Date().toISOString())
+      .order("appointment_time")
+      .limit(5),
+  ]);
+
+  const compliance = (complianceRes.data as unknown as Compliance) ?? {
+    days: [],
+    totals: { taken: 0, skipped: 0, missed: 0, pending: 0 },
+  };
+  const doses = (dosesRes.data as unknown as Dose[]) ?? [];
+  const missedDoses = doses.filter((d) => d.status === "MISSED");
+
+  const docs = docsRes.data ?? [];
+  const docsToCheck = docs.filter((d) => d.extraction_status === "PARSED");
+  const docsFailed = docs.filter((d) => d.extraction_status === "FAILED");
+
+  const nextCheckup = checkupsRes.data?.find((c) => {
+    const comps = c.checkup_completions;
+    return Array.isArray(comps) ? comps.length === 0 : !comps;
+  });
+
   const age = calculateAge(patient.date_of_birth);
   const canEdit = role === "OWNER" || role === "CAREGIVER";
 
@@ -64,6 +105,43 @@ export default async function PatientOverviewPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex justify-end">
+        <LiveRefresh patientId={patientId} />
+      </div>
+
+      <ComplianceCard compliance={compliance} timeZone={patient.timezone} />
+
+      <AttentionCard
+        missed={missedDoses}
+        documentsToCheck={docsToCheck}
+        documentsFailed={docsFailed}
+        patientId={patientId}
+        timeZone={patient.timezone}
+      />
+
+      <TodayDosesCard doses={doses} timeZone={patient.timezone} />
+
+      <Card title={strings.dashboard.nextCheckup}>
+        {nextCheckup ? (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-lg">{nextCheckup.doctor_name}</span>
+              <span className="rounded bg-panel px-2 py-1 text-xs font-semibold">
+                {nextCheckup.checkup_type in strings.checkups.types
+                  ? strings.checkups.types[nextCheckup.checkup_type as keyof typeof strings.checkups.types]
+                  : nextCheckup.checkup_type}
+              </span>
+            </div>
+            <div className="text-sm text-muted">
+              {dateInZone(nextCheckup.appointment_time, patient.timezone)} at{" "}
+              {timeInZone(nextCheckup.appointment_time, patient.timezone)}
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted">{strings.dashboard.noCheckup}</p>
+        )}
+      </Card>
+
       <Card title={strings.patients.editTitle}>
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {fields.map(({ label, value }) => (
