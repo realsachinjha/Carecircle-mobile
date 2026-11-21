@@ -17,6 +17,10 @@ export const POST = handleRoute<{ patientId: string }>(async (request, { params 
     throw appError("NOT_FOUND");
   }
   const { supabase } = await requireApiUser();
+  const { error: limitError } = await supabase.rpc("check_rate_limit", { p_action: "INVITE_CREATE" });
+  if (limitError) {
+    throw fromDb(limitError);
+  }
   const input = parseInput(inviteSchema, await readJsonBody(request));
   const { token, hash } = newInviteToken();
   const { data, error } = await supabase.rpc("create_invite", {

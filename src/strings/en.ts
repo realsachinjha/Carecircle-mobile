@@ -394,4 +394,23 @@ export const strings = {
     RATE_LIMITED: "Too many attempts. Wait a few minutes and try again.",
     INTERNAL: "Something went wrong. Quote this reference if it continues:",
   },
+  privacy: {
+    dangerTitle: "Data and deletion",
+    export: "Download all data (JSON)",
+    exportHint: "A file with everything stored about this person in CareCircle.",
+    deletePatient: "Delete this person",
+    deletePatientHint: "Everyone loses access at once. All data is removed for good after 30 days.",
+    typeNameToConfirm: "Type the person's full name to confirm",
+    deleteDocument: "Delete document",
+    confirmDeleteDocument: "Delete this document? Nobody will be able to see it. The file is removed for good after 30 days.",
+  },
+  notFound: {
+    title: "We could not find that page",
+    action: "Go to start",
+  },
+  systemError: {
+    title: "Something went wrong",
+    reference: "Reference:",
+    tryAgain: "Try again",
+  },
 } as const;

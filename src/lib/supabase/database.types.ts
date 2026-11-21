@@ -387,6 +387,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"rate_limits": {
+                  Row: {
+                    "hits": number,"key": string,"window_start": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "hits"?: number,"key": string,"window_start": string
+                  }
+                  Update: {
+                    "hits"?: number,"key"?: string,"window_start"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
@@ -422,6 +436,9 @@ isOneToOne: false
 "change_medication":
 { Args: { "p_medication": string,"p_medicine": Json }; Returns: string
                            },
+"check_rate_limit":
+{ Args: { "p_action": string }; Returns: undefined
+                           },
 "claim_document_for_parse":
 { Args: { "p_document": string }; Returns: Json
                            },
@@ -448,6 +465,9 @@ isOneToOne: false
               "acknowledged_at": string,"dosage": string,"instructions": string,"medication_name": string,"reminder_id": string,"scheduled_for": string,"slot": string,"status": string
             }[]
                            },
+"export_patient":
+{ Args: { "p_patient": string }; Returns: Json
+                           },
 "generate_reminders":
 { Args: { "p_now"?: string }; Returns: number
                            },
@@ -471,6 +491,14 @@ isOneToOne: false
                            },
 "notify_members":
 { Args: { "p_data": Json,"p_exclude"?: string,"p_kind": string,"p_patient": string,"p_roles": (string)[] }; Returns: number
+                           },
+"purge_candidates":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "path": string
+            }[]
+                           },
+"purge_finish":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "record_parse_result":
 { Args: { "p_document": string,"p_error_code"?: string,"p_ok": boolean,"p_raw"?: Json }; Returns: string
@@ -498,6 +526,12 @@ isOneToOne: false
                            },
 "shares_patient":
 { Args: { "p_user": string }; Returns: boolean
+                           },
+"soft_delete_document":
+{ Args: { "p_document": string }; Returns: undefined
+                           },
+"soft_delete_patient":
+{ Args: { "p_patient": string }; Returns: undefined
                            },
 "stop_medication":
 { Args: { "p_medication": string }; Returns: undefined

@@ -12,6 +12,10 @@ export const POST = handleRoute<{ documentId: string }>(async (_request, { param
     throw appError("NOT_FOUND");
   }
   const { supabase } = await requireApiUser();
+  const { error: limitError } = await supabase.rpc("check_rate_limit", { p_action: "PARSE" });
+  if (limitError) {
+    throw fromDb(limitError);
+  }
   const { data: claim, error: claimError } = await supabase.rpc("claim_document_for_parse", {
     p_document: documentId,
   });

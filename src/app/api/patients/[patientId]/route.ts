@@ -28,3 +28,16 @@ export const PATCH = handleRoute<{ patientId: string }>(async (request, { params
   }
   return jsonOk({ ok: true });
 });
+
+export const DELETE = handleRoute<{ patientId: string }>(async (_request, { params }) => {
+  const { patientId } = await params;
+  if (!isUuid(patientId)) {
+    throw appError("NOT_FOUND");
+  }
+  const { supabase } = await requireApiUser();
+  const { error } = await supabase.rpc("soft_delete_patient", { p_patient: patientId });
+  if (error) {
+    throw fromDb(error);
+  }
+  return jsonOk({ ok: true });
+});

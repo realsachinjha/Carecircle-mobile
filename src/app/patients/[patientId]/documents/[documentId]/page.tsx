@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ApprovalEditor } from "@/components/medicines/approval-editor";
+import { DeleteDocumentButton } from "@/components/documents/delete-document-button";
 import { DocumentDetailsForm } from "@/components/documents/document-details-form";
 import { DocumentPreview } from "@/components/documents/document-preview";
 import { ExtractionTable } from "@/components/documents/extraction-table";
@@ -59,6 +60,9 @@ export default async function DocumentDetailPage({ params }: PageProps) {
           initialIssueDate={doc.issue_date}
           canEdit={canEdit}
         />
+        {context.role === "OWNER" && (
+          <DeleteDocumentButton patientId={patientId} documentId={documentId} />
+        )}
       </div>
 
       <div className="flex flex-col gap-6">

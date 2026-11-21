@@ -9,6 +9,10 @@ const acceptSchema = z.object({ token: inviteTokenSchema });
 
 export const POST = handleRoute(async (request) => {
   const { supabase } = await requireApiUser();
+  const { error: limitError } = await supabase.rpc("check_rate_limit", { p_action: "INVITE_ACCEPT" });
+  if (limitError) {
+    throw fromDb(limitError);
+  }
   const { token } = parseInput(acceptSchema, await readJsonBody(request));
   const { data, error } = await supabase.rpc("accept_invite", { p_token_hash: hashInviteToken(token) });
   if (error) {

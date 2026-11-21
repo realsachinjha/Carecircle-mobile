@@ -83,3 +83,16 @@ export const PATCH = handleRoute<{ documentId: string }>(async (request, { param
   }
   return jsonOk({ ok: true });
 });
+
+export const DELETE = handleRoute<{ documentId: string }>(async (_request, { params }) => {
+  const { documentId } = await params;
+  if (!isUuid(documentId)) {
+    throw appError("NOT_FOUND");
+  }
+  const { supabase } = await requireApiUser();
+  const { error } = await supabase.rpc("soft_delete_document", { p_document: documentId });
+  if (error) {
+    throw fromDb(error);
+  }
+  return jsonOk({ ok: true });
+});

@@ -138,7 +138,7 @@ test.describe("accounts and access", () => {
     await expect(page.getByText(strings.people.revoked)).toBeVisible();
 
     await caregiverPage.reload();
-    await expect(caregiverPage.getByText("404")).toBeVisible();
+    await expect(caregiverPage.getByText(strings.notFound.title)).toBeVisible();
     await caregiverContext.close();
   });
 

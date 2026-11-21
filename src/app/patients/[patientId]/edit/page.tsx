@@ -3,6 +3,7 @@ import { PatientForm } from "@/components/patient-form";
 import { loadPatientContext } from "@/lib/patients/context";
 import type { PatientFields } from "@/lib/patients/schema";
 import { strings } from "@/strings/en";
+import { DangerZone } from "./danger-zone";
 
 export default async function EditPatientPage({
   params,
@@ -33,6 +34,11 @@ export default async function EditPatientPage({
     <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-semibold">{strings.patients.editTitle}</h2>
       <PatientForm mode="edit" patientId={patientId} initial={initial} />
+      <DangerZone
+        patientId={patientId}
+        patientFullName={patient.full_name}
+        isOwner={role === "OWNER"}
+      />
     </div>
   );
 }
