@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { loadPatientContext } from "@/lib/patients/context";
 import { tabsFor } from "@/lib/patients/tabs";
@@ -13,6 +14,9 @@ export default async function PatientLayout({
 }) {
   const { patientId } = await params;
   const { patient, role } = await loadPatientContext(patientId, `/patients/${patientId}`);
+  if (role === "PATIENT") {
+    redirect("/me");
+  }
   return (
     <>
       <AppHeader />

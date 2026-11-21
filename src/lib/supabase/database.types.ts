@@ -344,6 +344,23 @@ isOneToOne: false
             "accept_invite":
 { Args: { "p_token_hash": string }; Returns: Json
                            },
+"acknowledge_dose":
+{ Args: { "p_action": string,"p_reminder": string }; Returns: {
+              "acknowledged_at": string | null,
+"acknowledged_by": string | null,
+"created_at": string,
+"id": string,
+"patient_id": string,
+"schedule_id": string,
+"scheduled_for": string,
+"status": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "medication_reminders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "add_medication":
 { Args: { "p_medicine": Json,"p_patient": string }; Returns: string
                            },
@@ -364,6 +381,11 @@ isOneToOne: false
                            },
 "document_file_readable":
 { Args: { "p_name": string }; Returns: boolean
+                           },
+"doses_for_day":
+{ Args: { "p_day"?: string,"p_patient": string }; Returns: {
+              "acknowledged_at": string,"dosage": string,"instructions": string,"medication_name": string,"reminder_id": string,"scheduled_for": string,"slot": string,"status": string
+            }[]
                            },
 "generate_reminders":
 { Args: { "p_now"?: string }; Returns: number
