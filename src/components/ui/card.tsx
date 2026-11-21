@@ -1,16 +1,17 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 export function Card({
   title,
   className = "",
   children,
-}: {
+  ...props
+}: HTMLAttributes<HTMLElement> & {
   title?: string;
   className?: string;
   children: ReactNode;
 }) {
   return (
-    <section className={`flex flex-col gap-3 rounded-xl border border-line bg-paper p-5 ${className}`}>
+    <section className={`flex flex-col gap-3 rounded-xl border border-line bg-paper p-5 ${className}`} {...props}>
       {title ? <h2 className="text-xl font-semibold">{title}</h2> : null}
       {children}
     </section>

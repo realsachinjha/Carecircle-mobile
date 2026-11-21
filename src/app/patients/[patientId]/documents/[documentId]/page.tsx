@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ApprovalEditor } from "@/components/medicines/approval-editor";
 import { DocumentDetailsForm } from "@/components/documents/document-details-form";
 import { DocumentPreview } from "@/components/documents/document-preview";
 import { ExtractionTable } from "@/components/documents/extraction-table";
@@ -9,6 +10,7 @@ import { type DocumentType } from "@/lib/documents/constants";
 import { getEnv } from "@/lib/env";
 import { extractionSchema } from "@/lib/gemini/schema";
 import { isUuid } from "@/lib/ids";
+import { todayInZone } from "@/lib/time/local-date";
 import { strings } from "@/strings/en";
 
 type PageProps = {
@@ -78,10 +80,20 @@ export default async function DocumentDetailPage({ params }: PageProps) {
         )}
 
         {parsedResult && parsedResult.success && (
-          <ExtractionTable
-            extraction={parsedResult.data}
-            demoMode={getEnv().demoMode}
-          />
+          canEdit && status === "PARSED" ? (
+            <ApprovalEditor
+              documentId={documentId}
+              patientId={patientId}
+              extraction={parsedResult.data}
+              today={todayInZone(context.patient.timezone)}
+              demoMode={getEnv().demoMode}
+            />
+          ) : (
+            <ExtractionTable
+              extraction={parsedResult.data}
+              demoMode={getEnv().demoMode}
+            />
+          )
         )}
       </div>
     </div>
