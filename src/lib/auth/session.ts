@@ -19,3 +19,5 @@ export async function requireApiUser() {
   }
   return { supabase, user: data.user };
 }
+
+export { loadPatientContext } from "@/lib/patients/context";

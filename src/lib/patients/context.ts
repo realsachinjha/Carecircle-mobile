@@ -4,7 +4,7 @@ import { requirePageUser } from "@/lib/auth/session";
 
 export type PatientRole = "OWNER" | "CAREGIVER" | "VIEWER" | "PATIENT";
 
-export async function loadPatientContext(patientId: string, returnTo: string) {
+export async function loadPatientContext(patientId: string, returnTo = `/patients/${patientId}`) {
   if (!isUuid(patientId)) {
     notFound();
   }
