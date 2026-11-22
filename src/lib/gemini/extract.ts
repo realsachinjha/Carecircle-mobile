@@ -9,8 +9,30 @@ export async function extractMedicines(bytes: Uint8Array, mimeType: string): Pro
   if (env.demoMode) {
     return { ok: true, extraction: extractionSchema.parse(demoPrescription) };
   }
-  if (!env.geminiApiKey || !env.geminiModel) {
+  if (!env.geminiApiKey) {
     return { ok: false, code: "AI_NOT_CONFIGURED", raw: null };
   }
-  return extractWithGemini({ bytes, mimeType, apiKey: env.geminiApiKey, model: env.geminiModel });
+  const configuredModel = env.geminiModel?.trim();
+  const primaryModel =
+    configuredModel && configuredModel !== "gemini-2.5-flash" && configuredModel !== "gemini-2.5-flash-lite"
+      ? configuredModel
+      : "gemini-3-flash-preview";
+
+  const firstAttempt = await extractWithGemini({
+    bytes,
+    mimeType,
+    apiKey: env.geminiApiKey,
+    model: primaryModel,
+  });
+
+  if (firstAttempt.ok || firstAttempt.code !== "AI_NOT_CONFIGURED" || primaryModel === "gemini-3.1-flash-lite") {
+    return firstAttempt;
+  }
+
+  return extractWithGemini({
+    bytes,
+    mimeType,
+    apiKey: env.geminiApiKey,
+    model: "gemini-3.1-flash-lite",
+  });
 }
