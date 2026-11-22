@@ -54,8 +54,8 @@ export function LiveRefresh({ patientId }: { patientId: string }) {
   }, [patientId, router]);
 
   return (
-    <div className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
-      <span className="inline-block h-2 w-2 rounded-full bg-ok" aria-hidden="true" />
+    <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white" aria-live="polite">
+      <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
       <span>{strings.dashboard.live}</span>
     </div>
   );

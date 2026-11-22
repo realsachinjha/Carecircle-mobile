@@ -11,8 +11,11 @@ export function Card({
   children: ReactNode;
 }) {
   return (
-    <section className={`flex flex-col gap-3 rounded-xl border border-line bg-paper p-5 ${className}`} {...props}>
-      {title ? <h2 className="text-xl font-semibold">{title}</h2> : null}
+    <section
+      className={`flex flex-col gap-4 rounded-2xl border border-line bg-white p-5 shadow-[0_2px_12px_-4px_rgba(24,56,45,0.06)] ${className}`}
+      {...props}
+    >
+      {title ? <h2 className="text-xl font-bold tracking-tight text-ink">{title}</h2> : null}
       {children}
     </section>
   );

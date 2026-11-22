@@ -3,9 +3,9 @@ import type { ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "secondary" | "danger";
 
 const VARIANT_CLASSES: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink",
-  secondary: "border-2 border-accent bg-paper text-accent",
-  danger: "bg-danger text-accent-ink",
+  primary: "bg-forest text-white hover:bg-forest-deep active:scale-[0.99] shadow-sm",
+  secondary: "border border-forest/25 bg-sage-soft text-forest hover:bg-sage/50 active:scale-[0.99]",
+  danger: "bg-terracotta text-white hover:bg-terracotta-dark active:scale-[0.99] shadow-sm",
 };
 
 export function buttonClass({
@@ -15,7 +15,7 @@ export function buttonClass({
   variant?: Variant;
   className?: string;
 } = {}) {
-  return `inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-lg font-semibold disabled:opacity-60 ${VARIANT_CLASSES[variant]} ${className}`;
+  return `inline-flex min-h-12 items-center justify-center rounded-full px-6 text-lg font-semibold transition-all disabled:opacity-50 disabled:pointer-events-none ${VARIANT_CLASSES[variant]} ${className}`;
 }
 
 export function Button({

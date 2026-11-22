@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { BottomNav } from "@/components/navigation/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { requirePageUser } from "@/lib/auth/session";
 import { AccountForm } from "./account-form";
@@ -13,10 +14,12 @@ export default async function AccountPage() {
     .single();
 
   return (
-    <>
+    <div className="min-h-screen bg-ivory text-ink pb-24">
       <AppHeader />
       <main className="mx-auto flex max-w-xl flex-col gap-6 p-4">
-        <h1 className="text-3xl font-semibold">{strings.account.title}</h1>
+        <div className="rounded-2xl bg-forest-deep px-5 py-4 text-white shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight">{strings.account.title}</h1>
+        </div>
         <Card>
           <AccountForm
             email={profile?.email ?? user.email ?? ""}
@@ -25,6 +28,7 @@ export default async function AccountPage() {
           />
         </Card>
       </main>
-    </>
+      <BottomNav />
+    </div>
   );
 }

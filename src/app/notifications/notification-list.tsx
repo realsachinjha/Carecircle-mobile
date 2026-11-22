@@ -43,14 +43,14 @@ export function NotificationList({ items }: { items: NotificationItem[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{strings.notifications.title}</h1>
+      <div className="flex items-center justify-between rounded-2xl bg-forest-deep px-5 py-4 text-white shadow-sm">
+        <h1 className="text-2xl font-bold tracking-tight">{strings.notifications.title}</h1>
         {hasUnread ? (
           <button
             type="button"
             onClick={() => markRead()}
             disabled={submitting}
-            className="rounded bg-accent px-4 py-2 font-semibold text-accent-ink disabled:opacity-50"
+            className="inline-flex min-h-10 items-center justify-center rounded-full bg-terracotta px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-terracotta-dark disabled:opacity-50"
           >
             {strings.notifications.markAllRead}
           </button>
@@ -58,9 +58,11 @@ export function NotificationList({ items }: { items: NotificationItem[] }) {
       </div>
 
       {items.length === 0 ? (
-        <p className="text-muted">{strings.notifications.empty}</p>
+        <div className="rounded-2xl border border-line bg-white p-8 text-center text-sm font-medium text-muted">
+          {strings.notifications.empty}
+        </div>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded border border-line bg-paper">
+        <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-white shadow-[0_2px_12px_-4px_rgba(24,56,45,0.06)] overflow-hidden">
           {items.map((item) => {
             const tz = item.timezone || "Asia/Kolkata";
             const rendered = renderNotification(item.kind, item.data, tz);
@@ -69,36 +71,50 @@ export function NotificationList({ items }: { items: NotificationItem[] }) {
             const when = `${dateInZone(item.created_at, tz)} at ${timeInZone(item.created_at, tz)}`;
 
             return (
-              <li key={item.id} className="flex flex-col gap-2 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    {item.patient_name ? (
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        {item.patient_name}
-                      </span>
-                    ) : null}
-                    <h3
-                      className={`text-base ${
-                        isUnread ? "font-bold text-ink" : "font-medium text-muted"
-                      }`}
-                    >
-                      {rendered.title}
-                    </h3>
-                    {rendered.body ? (
-                      <p className={`text-sm ${isUnread ? "font-medium" : "text-muted"}`}>
-                        {rendered.body}
-                      </p>
-                    ) : null}
-                    <span className="text-xs text-muted">{when}</span>
+              <li
+                key={item.id}
+                className={`flex flex-col gap-2 p-4 transition-colors ${
+                  isUnread ? "bg-sage-light/60" : "bg-white hover:bg-surface/30"
+                }`}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                      {isUnread ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-terracotta ring-4 ring-peach" />
+                      ) : (
+                        <div className="h-2.5 w-2.5 rounded-full bg-line" />
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      {item.patient_name ? (
+                        <span className="text-xs font-bold uppercase tracking-wider text-muted">
+                          {item.patient_name}
+                        </span>
+                      ) : null}
+                      <h3
+                        className={`text-base ${
+                          isUnread ? "font-bold text-ink" : "font-medium text-muted"
+                        }`}
+                      >
+                        {rendered.title}
+                      </h3>
+                      {rendered.body ? (
+                        <p className={`text-sm ${isUnread ? "font-semibold text-ink" : "text-muted"}`}>
+                          {rendered.body}
+                        </p>
+                      ) : null}
+                      <span className="text-xs text-muted mt-1">{when}</span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {link ? (
                       <Link
                         href={link}
-                        className="min-h-12 px-3 text-sm font-semibold underline"
+                        className="inline-flex min-h-9 items-center justify-center rounded-full border border-forest/20 bg-sage-soft px-3 py-1 text-xs font-semibold text-forest hover:bg-sage"
                       >
-                        {strings.notifications.open}
+                        {strings.common.reference}
                       </Link>
                     ) : null}
                     {isUnread ? (
@@ -106,7 +122,7 @@ export function NotificationList({ items }: { items: NotificationItem[] }) {
                         type="button"
                         onClick={() => markRead([item.id])}
                         disabled={submitting}
-                        className="min-h-12 px-3 text-sm font-semibold text-accent underline disabled:opacity-50"
+                        className="inline-flex min-h-9 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold text-muted hover:text-ink disabled:opacity-50"
                       >
                         {strings.notifications.markRead}
                       </button>

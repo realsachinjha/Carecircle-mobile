@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { Disclaimer } from "@/components/disclaimer";
+import { BottomNav } from "@/components/navigation/bottom-nav";
 import { HomeScreenTip } from "@/components/patient/home-screen-tip";
 import { PatientToday } from "@/components/patient/patient-today";
 import { Card } from "@/components/ui/card";
@@ -45,9 +46,9 @@ export default async function PatientHomePage() {
   });
 
   return (
-    <>
+    <div className="min-h-screen bg-ivory text-ink pb-24">
       <AppHeader showCaregiverNav={false} />
-      <main className="mx-auto flex max-w-xl flex-col gap-6 p-4 text-xl">
+      <main className="mx-auto flex max-w-xl flex-col gap-6 p-4">
         <HomeScreenTip />
         <PatientToday
           patientId={link.patient_id}
@@ -57,10 +58,10 @@ export default async function PatientHomePage() {
         />
         {nextCheckup ? (
           <Card title={strings.dashboard.nextCheckup}>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5 rounded-xl bg-surface/50 p-4 border border-line">
               <div className="flex items-center justify-between">
-                <span className="font-bold">{nextCheckup.doctor_name}</span>
-                <span className="rounded bg-panel px-2 py-1 text-sm font-semibold">
+                <span className="font-bold text-ink">{nextCheckup.doctor_name}</span>
+                <span className="rounded-full bg-sage px-3 py-0.5 text-xs font-semibold text-forest">
                   {nextCheckup.checkup_type in strings.checkups.types
                     ? strings.checkups.types[
                         nextCheckup.checkup_type as keyof typeof strings.checkups.types
@@ -68,7 +69,7 @@ export default async function PatientHomePage() {
                     : nextCheckup.checkup_type}
                 </span>
               </div>
-              <div className="text-base text-muted">
+              <div className="text-sm font-medium text-muted">
                 {dateInZone(nextCheckup.appointment_time, patient.timezone)} at{" "}
                 {timeInZone(nextCheckup.appointment_time, patient.timezone)}
               </div>
@@ -79,6 +80,7 @@ export default async function PatientHomePage() {
           <Disclaimer variant="footer" />
         </footer>
       </main>
-    </>
+      <BottomNav />
+    </div>
   );
 }

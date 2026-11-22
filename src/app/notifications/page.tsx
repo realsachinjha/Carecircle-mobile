@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { BottomNav } from "@/components/navigation/bottom-nav";
 import { requirePageUser } from "@/lib/auth/session";
 import { NotificationList, type NotificationItem } from "./notification-list";
 
@@ -27,11 +28,12 @@ export default async function NotificationsPage() {
   });
 
   return (
-    <>
+    <div className="min-h-screen bg-ivory text-ink pb-24">
       <AppHeader />
       <main className="mx-auto flex max-w-4xl flex-col gap-6 p-4">
         <NotificationList items={items} />
       </main>
-    </>
+      <BottomNav />
+    </div>
   );
 }

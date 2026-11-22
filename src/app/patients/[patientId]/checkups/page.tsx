@@ -49,12 +49,12 @@ export default async function CheckupsPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{strings.checkups.title}</h1>
+      <div className="flex items-center justify-between rounded-2xl bg-forest-deep px-5 py-4 text-white shadow-sm">
+        <h1 className="text-2xl font-bold tracking-tight">{strings.checkups.title}</h1>
         {canManage ? (
           <Link
             href={`/patients/${patientId}/checkups/new`}
-            className="inline-flex min-h-12 items-center rounded-lg bg-accent px-4 font-semibold text-accent-ink"
+            className="inline-flex min-h-10 items-center justify-center rounded-full bg-terracotta px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-terracotta-dark"
           >
             {strings.checkups.add}
           </Link>
@@ -63,37 +63,37 @@ export default async function CheckupsPage({
 
       <Card title={strings.checkups.upcoming}>
         {upcoming.length === 0 ? (
-          <p className="text-muted">{strings.checkups.empty}</p>
+          <p className="text-sm text-muted">{strings.checkups.empty}</p>
         ) : (
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-3">
             {upcoming.map((c) => {
               const typeLabel =
                 c.checkup_type in strings.checkups.types
                   ? strings.checkups.types[c.checkup_type as keyof typeof strings.checkups.types]
                   : c.checkup_type;
               return (
-                <li key={c.id} className="rounded border border-line p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
+                <li key={c.id} className="rounded-2xl border border-line bg-surface/30 p-4 transition-colors hover:bg-white">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <span className="rounded bg-panel px-2 py-1 text-xs font-semibold">
+                      <span className="rounded-full bg-sage px-3 py-0.5 text-xs font-bold text-forest">
                         {typeLabel}
                       </span>
-                      <h3 className="mt-1 text-lg font-bold">{c.doctor_name}</h3>
+                      <h3 className="mt-1 text-lg font-bold text-ink">{c.doctor_name}</h3>
                       {c.clinic_location ? (
-                        <p className="text-sm text-muted">{c.clinic_location}</p>
+                        <p className="text-xs font-medium text-muted">{c.clinic_location}</p>
                       ) : null}
-                      <p className="mt-1 text-base font-medium">
+                      <p className="mt-1 text-sm font-semibold text-forest">
                         {dateInZone(c.appointment_time, patient.timezone)} at{" "}
                         {timeInZone(c.appointment_time, patient.timezone)}
                       </p>
-                      {c.notes ? <p className="mt-2 text-sm">{c.notes}</p> : null}
+                      {c.notes ? <p className="mt-2 text-xs text-muted">{c.notes}</p> : null}
                     </div>
 
                     {canManage ? (
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/patients/${patientId}/checkups/${c.id}/edit`}
-                          className="min-h-12 px-2 text-sm font-semibold underline"
+                          className="inline-flex min-h-9 items-center justify-center rounded-full border border-forest/20 bg-sage-soft px-3 text-xs font-semibold text-forest hover:bg-sage"
                         >
                           {strings.common.edit}
                         </Link>
@@ -103,7 +103,9 @@ export default async function CheckupsPage({
                   </div>
 
                   {canManage ? (
-                    <CompleteCheckupForm checkupId={c.id} patientId={patientId} />
+                    <div className="mt-3 pt-3 border-t border-line/60">
+                      <CompleteCheckupForm checkupId={c.id} patientId={patientId} />
+                    </div>
                   ) : null}
                 </li>
               );
@@ -114,9 +116,9 @@ export default async function CheckupsPage({
 
       <Card title={strings.checkups.past}>
         {past.length === 0 ? (
-          <p className="text-muted">{strings.checkups.empty}</p>
+          <p className="text-sm text-muted">{strings.checkups.empty}</p>
         ) : (
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-3">
             {past.map((c) => {
               const comp = Array.isArray(c.checkup_completions)
                 ? c.checkup_completions[0]
@@ -126,25 +128,25 @@ export default async function CheckupsPage({
                   ? strings.checkups.types[c.checkup_type as keyof typeof strings.checkups.types]
                   : c.checkup_type;
               return (
-                <li key={c.id} className="rounded border border-line p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
+                <li key={c.id} className="rounded-2xl border border-line bg-surface/20 p-4 opacity-80">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <span className="rounded bg-panel px-2 py-1 text-xs font-semibold">
+                      <span className="rounded-full bg-surface px-3 py-0.5 text-xs font-semibold text-muted">
                         {typeLabel}
                       </span>
-                      <h3 className="mt-1 text-lg font-bold">{c.doctor_name}</h3>
-                      <p className="text-sm text-muted">
+                      <h3 className="mt-1 text-base font-bold text-ink">{c.doctor_name}</h3>
+                      <p className="text-xs text-muted">
                         {dateInZone(c.appointment_time, patient.timezone)} at{" "}
                         {timeInZone(c.appointment_time, patient.timezone)}
                       </p>
                       {comp ? (
-                        <div className="mt-2 rounded bg-panel p-2">
-                          <p className="text-sm font-semibold text-ok">
+                        <div className="mt-2 rounded-xl bg-sage-light p-2.5 border border-line">
+                          <p className="text-xs font-bold text-forest">
                             {strings.checkups.completedOn}{" "}
                             {dateInZone(comp.completed_at, patient.timezone)}
                           </p>
                           {comp.clinical_notes ? (
-                            <p className="mt-1 text-sm">{comp.clinical_notes}</p>
+                            <p className="mt-1 text-xs text-muted">{comp.clinical_notes}</p>
                           ) : null}
                         </div>
                       ) : null}
@@ -154,7 +156,7 @@ export default async function CheckupsPage({
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/patients/${patientId}/checkups/${c.id}/edit`}
-                          className="min-h-12 px-2 text-sm font-semibold underline"
+                          className="inline-flex min-h-9 items-center justify-center rounded-full border border-line bg-white px-3 text-xs font-semibold text-muted hover:text-ink"
                         >
                           {strings.common.edit}
                         </Link>
@@ -164,7 +166,9 @@ export default async function CheckupsPage({
                   </div>
 
                   {canManage && !comp ? (
-                    <CompleteCheckupForm checkupId={c.id} patientId={patientId} />
+                    <div className="mt-3 pt-3 border-t border-line/60">
+                      <CompleteCheckupForm checkupId={c.id} patientId={patientId} />
+                    </div>
                   ) : null}
                 </li>
               );
