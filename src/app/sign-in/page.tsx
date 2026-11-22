@@ -8,8 +8,18 @@ export default async function SignInPage({
 }) {
   const { next, error } = await searchParams;
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 p-6">
-      <SignInForm next={safeNextPath(next)} linkFailed={error === "link"} />
+    <main className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-ivory px-6 py-12">
+      <div
+        className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full bg-sage-soft/70 blur-3xl"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute bottom-10 -left-20 h-72 w-72 rounded-full bg-sage/40 blur-3xl"
+        aria-hidden="true"
+      />
+      <div className="relative z-10 mx-auto w-full max-w-sm">
+        <SignInForm next={safeNextPath(next)} linkFailed={error === "link"} />
+      </div>
     </main>
   );
 }

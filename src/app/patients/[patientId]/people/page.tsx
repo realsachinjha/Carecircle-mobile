@@ -1,8 +1,11 @@
-import { Card } from "@/components/ui/card";
-import { loadPatientContext } from "@/lib/patients/context";
+import Link from "next/link";
 import { InvitePanel } from "./invite-panel";
 import { CancelInviteButton, RemoveLoginButton, RevokeButton } from "./people-actions";
+import { Card } from "@/components/ui/card";
+import { loadPatientContext } from "@/lib/patients/context";
 import { strings } from "@/strings/en";
+
+export const dynamic = "force-dynamic";
 
 type CaregiverRow = {
   id: string;
@@ -36,7 +39,7 @@ export default async function PeoplePage({
   params: Promise<{ patientId: string }>;
 }) {
   const { patientId } = await params;
-  const { supabase, role } = await loadPatientContext(patientId, `/patients/${patientId}/people`);
+  const { supabase, patient, role } = await loadPatientContext(patientId, `/patients/${patientId}/people`);
   const isOwner = role === "OWNER";
 
   const { data: caregiversData } = await supabase
@@ -67,82 +70,107 @@ export default async function PeoplePage({
     pendingInvites = (invitesData as unknown as InviteRow[]) ?? [];
   }
 
+  const patientInitial = (patient.full_name.trim()[0] ?? "P").toUpperCase();
+
   return (
-    <div className="flex flex-col gap-6">
-      <Card title={strings.people.caregivers}>
-        <div className="flex items-center justify-between -mt-2 mb-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted">Care Team</span>
-          <span className="rounded-full bg-sage px-2.5 py-0.5 text-xs font-bold text-forest">
-            {caregivers.length} members
-          </span>
-        </div>
-        <ul className="flex flex-col divide-y divide-line">
-          {caregivers.map((member) => {
-            const isSelf = isOwner && member.role === "OWNER";
-            const canRevoke = isOwner && !isSelf && member.status === "ACTIVE";
-            const name = member.profiles?.full_name ?? member.profiles?.email ?? "User";
-            const initials = name
-              .split(" ")
-              .map((w) => w[0])
-              .filter(Boolean)
-              .slice(0, 2)
-              .join("")
-              .toUpperCase();
+    <div className="flex flex-col gap-5">
+      <div className="relative flex items-center justify-between py-1">
+        <Link
+          href={`/patients/${patientId}`}
+          className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-sage-soft"
+          aria-label={strings.common.back}
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </Link>
+        <h1 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+          {strings.people.familyCircle}
+        </h1>
+        <div className="h-10 w-10" aria-hidden="true" />
+      </div>
 
-            return (
-              <li key={member.id} className="flex items-center justify-between gap-3 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage text-forest font-bold text-xs shadow-2xs">
-                    {initials}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-ink">{name}</span>
-                    <span className="text-xs text-muted">{member.profiles?.email}</span>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-semibold text-forest">
-                        {strings.roles[member.role]}
-                      </span>
-                      {member.status === "REVOKED" ? (
-                        <span className="text-xs text-danger font-bold">{strings.people.revoked}</span>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-                {canRevoke ? (
-                  <RevokeButton patientId={patientId} userId={member.user_id} />
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      </Card>
+      <div className="flex flex-col gap-3">
+        <span className="px-1 text-xs font-semibold text-muted">
+          {strings.people.yourCareCircle}
+        </span>
 
-      <Card title={strings.people.patientLogin}>
-        {patientLogin?.profiles ? (
-          <div className="flex items-center justify-between gap-3 py-2">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-peach text-forest-deep font-bold text-xs shadow-2xs">
-                {patientLogin.profiles.full_name.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-ink">{patientLogin.profiles.full_name}</span>
-                <span className="text-xs text-muted">{patientLogin.profiles.email}</span>
+        <div className="flex items-center justify-between rounded-2xl border border-line-soft bg-white p-4 shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sage-soft font-bold text-forest">
+              {patientInitial}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-ink">{patient.full_name}</span>
+              <div className="mt-0.5">
+                <span className="rounded-full bg-sage-soft px-2.5 py-0.5 text-xs font-semibold text-forest">
+                  {strings.roles.PATIENT}
+                </span>
               </div>
             </div>
-            {isOwner ? <RemoveLoginButton patientId={patientId} /> : null}
           </div>
-        ) : (
-          <p className="text-sm text-muted">{strings.people.noPatientLogin}</p>
-        )}
-      </Card>
+          {patientLogin?.profiles && isOwner ? (
+            <RemoveLoginButton patientId={patientId} />
+          ) : (
+            <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          )}
+        </div>
+
+        {caregivers.map((member) => {
+          const isSelf = isOwner && member.role === "OWNER";
+          const canRevoke = isOwner && !isSelf && member.status === "ACTIVE";
+          const name = member.profiles?.full_name ?? member.profiles?.email ?? "User";
+          const initial = (name.trim()[0] ?? "U").toUpperCase();
+          const roleLabel =
+            member.role === "OWNER"
+              ? strings.people.roleAdminCaregiver
+              : member.role === "VIEWER"
+                ? strings.people.roleViewOnly
+                : strings.roles.CAREGIVER;
+
+          return (
+            <div
+              key={member.id}
+              className="flex items-center justify-between rounded-2xl border border-line-soft bg-white p-4 shadow-xs"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sage-soft font-bold text-forest">
+                  {initial}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-base font-bold text-ink">{name}</span>
+                  <div className="mt-0.5 flex items-center gap-2">
+                    <span className="rounded-full bg-sage-soft px-2.5 py-0.5 text-xs font-semibold text-forest">
+                      {roleLabel}
+                    </span>
+                    {member.status === "REVOKED" ? (
+                      <span className="text-xs font-bold text-danger">{strings.people.revoked}</span>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              {canRevoke ? (
+                <RevokeButton patientId={patientId} userId={member.user_id} />
+              ) : (
+                <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       {isOwner ? (
-        <>
+        <div className="flex flex-col gap-4">
           <InvitePanel patientId={patientId} hasPatientLogin={Boolean(patientLogin)} />
 
           {pendingInvites.length > 0 ? (
             <Card title={strings.people.pendingInvites}>
-              <ul className="flex flex-col divide-y divide-line">
+              <ul className="flex flex-col divide-y divide-line-soft">
                 {pendingInvites.map((invite) => (
                   <li key={invite.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="flex flex-col">
@@ -157,7 +185,7 @@ export default async function PeoplePage({
               </ul>
             </Card>
           ) : null}
-        </>
+        </div>
       ) : null}
     </div>
   );

@@ -19,16 +19,16 @@ export default async function PatientLayout({
     redirect("/me");
   }
   return (
-    <div className="min-h-screen bg-ivory text-ink pb-24">
+    <div className="min-h-screen bg-ivory text-ink pb-28">
       <AppHeader />
-      <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4">
+      <div className="mx-auto flex max-w-lg flex-col gap-4 p-4">
         <PatientHeaderBanner patient={patient} role={role} />
         <nav aria-label={patient.full_name} className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {tabsFor(role).map((tab) => (
             <Link
               key={tab.label}
               href={tab.href(patientId)}
-              className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-ink shadow-xs transition-colors hover:border-forest/30 hover:bg-sage-soft"
+              className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-line-soft bg-white px-4 py-1.5 text-xs font-semibold text-ink shadow-xs transition-colors hover:border-forest/30 hover:bg-sage-soft"
             >
               {tab.label}
             </Link>
